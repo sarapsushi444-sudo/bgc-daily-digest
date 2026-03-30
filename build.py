@@ -147,18 +147,32 @@ def build_digest_html(filename, date_display, day, markdown_content):
   <title>BGC Digest — {date_display}</title>
   <link rel="stylesheet" href="style.css">
   <meta name="description" content="BGC Daily Digest — {date_display}">
+  <script>
+    (function() {{
+      const saved = localStorage.getItem('theme');
+      if (saved === 'dark' || (!saved && window.matchMedia('(prefers-color-scheme: dark)').matches)) {{
+        document.documentElement.setAttribute('data-theme', 'dark');
+      }}
+    }})();
+  </script>
 </head>
 <body>
 
 <nav class="navbar">
   <div class="navbar-inner">
-    <a href="../index.html" class="navbar-brand">📰 <span>BGC</span> Daily Digest</a>
-    <div class="nav-topics">
-      <a href="#ai-llm" class="nav-topic ai">🧠 AI/LLM</a>
-      <a href="#crypto" class="nav-topic crypto">₿ Crypto</a>
-      <a href="#oil" class="nav-topic oil">🛢️ Oil &amp; Gas</a>
-      <a href="#finance" class="nav-topic finance">📈 US Markets</a>
-      <a href="#ph" class="nav-topic ph">🇵🇭 Philippines</a>
+    <a href="index.html" class="navbar-brand">📰 <span>BGC</span> Daily Digest</a>
+    <div class="navbar-right">
+      <div class="nav-topics">
+        <a href="#ai-llm" class="nav-topic ai">🧠 AI/LLM</a>
+        <a href="#crypto" class="nav-topic crypto">₿ Crypto</a>
+        <a href="#oil" class="nav-topic oil">🛢️ Oil &amp; Gas</a>
+        <a href="#finance" class="nav-topic finance">📈 US Markets</a>
+        <a href="#ph" class="nav-topic ph">🇵🇭 PH</a>
+      </div>
+      <button class="theme-toggle" id="themeToggle" aria-label="Toggle dark mode">
+        <svg class="icon-sun" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+        <svg class="icon-moon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 12.79A9 9 0 1 1 11.21 3 7 7 0 0 0 21 12.79z"/></svg>
+      </button>
     </div>
   </div>
 </nav>
@@ -183,6 +197,21 @@ def build_digest_html(filename, date_display, day, markdown_content):
   <p>🤖 Powered by <a href="https://github.com/draco-agent/tech-news-digest" target="_blank">tech-news-digest</a> &amp; <a href="https://openclaw.ai" target="_blank">OpenClaw</a></p>
   <p style="margin-top:0.4rem; color: var(--text-muted);">BGC Daily Digest — Philippines 🦖</p>
 </footer>
+
+<script>
+  const toggle = document.getElementById('themeToggle');
+  const root = document.documentElement;
+  function applyTheme(theme) {{
+    root.setAttribute('data-theme', theme);
+    localStorage.setItem('theme', theme);
+  }}
+  const saved = localStorage.getItem('theme');
+  if (saved) applyTheme(saved);
+  else if (window.matchMedia('(prefers-color-scheme: dark)').matches) applyTheme('dark');
+  toggle.addEventListener('click', () => {{
+    applyTheme(root.getAttribute('data-theme') === 'dark' ? 'light' : 'dark');
+  }});
+</script>
 
 </body>
 </html>'''
@@ -265,7 +294,8 @@ def main():
     # Copy index + css to archive directory too (for GitHub Pages root)
     os.system(f'cp {OUTPUT_DIR}/index.html {OUTPUT_DIR}/archive/')
     os.system(f'cp {OUTPUT_DIR}/style.css {OUTPUT_DIR}/archive/')
-    print('Copied index.html and style.css to archive/ (GitHub Pages root)')
+    os.system(f'cp {OUTPUT_DIR}/archive/manifest.json {OUTPUT_DIR}/manifest.json')
+    print('Copied index.html, style.css, manifest.json to archive/ and root (GitHub Pages)')
 
 if __name__ == '__main__':
     main()
