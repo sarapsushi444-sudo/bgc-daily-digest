@@ -145,7 +145,7 @@ def build_digest_html(filename, date_display, day, markdown_content):
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>BGC Digest — {date_display}</title>
-  <link rel="stylesheet" href="../style.css">
+  <link rel="stylesheet" href="style.css">
   <meta name="description" content="BGC Daily Digest — {date_display}">
 </head>
 <body>
@@ -164,7 +164,7 @@ def build_digest_html(filename, date_display, day, markdown_content):
 </nav>
 
 <div class="container">
-  <a href="../index.html" class="back-link">← All Digests</a>
+  <a href="index.html" class="back-link">← All Digests</a>
 
   <div class="digest-meta">
     <span class="date">{date_display}</span>
