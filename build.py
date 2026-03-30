@@ -31,8 +31,8 @@ def extract_sections(markdown_content):
     
     # Pattern for section headers like ## 🧠 AI / LLM News & Trends
     header_pattern = re.compile(r'^##\s+([^\s]+)\s+(.+)$', re.MULTILINE)
-    # Pattern for article lines: - 🔥78.5 | Title...
-    article_pattern = re.compile(r'^-\s+\*\*🔥([\d.]+)\|?\s+\*\*.*?\[([^\]]+)\]\(([^\)]+)\).*$', re.MULTILINE)
+    # Pattern for article lines: - 🔥 **78.5** • Title [link]
+    article_pattern = re.compile(r'^-\s+🔥\s+\*\*([\d.]+)\*\*.*?\[([^\]]+)\]\(([^\)]+)\).*$', re.MULTILINE)
     
     lines = markdown_content.split('\n')
     for line in lines:
@@ -53,7 +53,7 @@ def extract_sections(markdown_content):
             continue
         
         # Article line
-        am = re.search(r'\*\*🔥([\d.]+)\*\*.*?\[([^\]]+)\]\(([^\)]+)\)', line)
+        am = re.search(r'🔥\s+\*\*([\d.]+)\*\*.*?\[([^\]]+)\]\(([^\)]+)\)', line)
         if am:
             score, title, url = am.group(1), am.group(2), am.group(3)
             current['articles'].append({
