@@ -1,0 +1,303 @@
+/* === BGC Daily Digest — Clean & Minimal === */
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #fafafa;
+  --surface: #ffffff;
+  --border: #e5e7eb;
+  --text-primary: #111827;
+  --text-secondary: #6b7280;
+  --text-muted: #9ca3af;
+  --accent: #2563eb;
+  --accent-hover: #1d4ed8;
+  --tag-ai: #7c3aed;
+  --tag-crypto: #f59e0b;
+  --tag-oil: #dc2626;
+  --tag-finance: #059669;
+  --tag-ph: #2563eb;
+  --radius: 10px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08), 0 1px 2px rgba(0,0,0,0.06);
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+  background: var(--bg);
+  color: var(--text-primary);
+  line-height: 1.6;
+  min-height: 100vh;
+}
+
+/* ── Navbar ── */
+.navbar {
+  background: var(--surface);
+  border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  backdrop-filter: blur(8px);
+  background: rgba(255,255,255,0.92);
+}
+.navbar-inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 1.5rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 60px;
+  gap: 1rem;
+}
+.navbar-brand {
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--text-primary);
+  text-decoration: none;
+  white-space: nowrap;
+}
+.navbar-brand span { color: var(--accent); }
+.nav-topics {
+  display: flex;
+  gap: 0.25rem;
+  flex-wrap: wrap;
+}
+.nav-topic {
+  font-size: 0.8rem;
+  font-weight: 500;
+  padding: 0.3rem 0.7rem;
+  border-radius: 20px;
+  text-decoration: none;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.nav-topic:hover { opacity: 0.8; transform: translateY(-1px); }
+.nav-topic.ai    { background: #ede9fe; color: var(--tag-ai); }
+.nav-topic.crypto { background: #fef3c7; color: #92400e; }
+.nav-topic.oil   { background: #fee2e2; color: var(--tag-oil); }
+.nav-topic.finance { background: #d1fae5; color: #065f46; }
+.nav-topic.ph     { background: #dbeafe; color: var(--tag-ph); }
+
+/* ── Layout ── */
+.container {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 2rem 1.5rem;
+}
+
+/* ── Index page ── */
+.page-header {
+  margin-bottom: 2rem;
+}
+.page-header h1 {
+  font-size: 2rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+.page-header p {
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+/* ── Digest cards (index) ── */
+.digest-grid {
+  display: grid;
+  gap: 1rem;
+}
+.digest-card {
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 1.25rem 1.5rem;
+  box-shadow: var(--shadow);
+  text-decoration: none;
+  color: inherit;
+  display: block;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.digest-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+}
+.digest-card-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+.digest-date {
+  font-weight: 600;
+  font-size: 1.05rem;
+}
+.digest-day { font-size: 0.8rem; color: var(--text-muted); font-weight: 400; margin-left: 0.5rem; }
+.digest-badge {
+  font-size: 0.7rem;
+  font-weight: 600;
+  padding: 0.2rem 0.6rem;
+  border-radius: 20px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+}
+.digest-topics {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+}
+.digest-topic-tag {
+  font-size: 0.72rem;
+  font-weight: 500;
+  padding: 0.2rem 0.55rem;
+  border-radius: 20px;
+}
+.digest-topic-tag.ai    { background: #ede9fe; color: var(--tag-ai); }
+.digest-topic-tag.crypto { background: #fef3c7; color: #92400e; }
+.digest-topic-tag.oil    { background: #fee2e2; color: var(--tag-oil); }
+.digest-topic-tag.finance { background: #d1fae5; color: #065f46; }
+.digest-topic-tag.ph     { background: #dbeafe; color: var(--tag-ph); }
+
+/* ── Section nav (inside digest) ── */
+.section-nav {
+  display: flex;
+  gap: 0.4rem;
+  flex-wrap: wrap;
+  margin-bottom: 1.5rem;
+  padding: 0.75rem 1rem;
+  background: var(--surface);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+}
+.section-nav a {
+  font-size: 0.78rem;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.25rem 0.6rem;
+  border-radius: 6px;
+  background: var(--bg);
+  color: var(--text-secondary);
+  border: 1px solid var(--border);
+  transition: all 0.15s;
+}
+.section-nav a:hover { background: var(--accent); color: white; border-color: var(--accent); }
+
+/* ── Digest content ── */
+.digest-meta {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  flex-wrap: wrap;
+}
+.digest-meta .date { font-size: 1.4rem; font-weight: 700; }
+.digest-meta .day { font-size: 0.9rem; color: var(--text-secondary); margin-left: 0.3rem; }
+.back-link {
+  font-size: 0.82rem;
+  color: var(--accent);
+  text-decoration: none;
+  margin-bottom: 1.5rem;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+}
+.back-link:hover { text-decoration: underline; }
+
+/* ── Article sections ── */
+.section { margin-bottom: 2.5rem; }
+.section-header {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 2px solid var(--border);
+}
+.section-header .emoji { font-size: 1.3rem; }
+.section-header h2 { font-size: 1.05rem; font-weight: 600; }
+.article-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.article-item:last-child { border-bottom: none; }
+.article-score {
+  font-size: 0.7rem;
+  font-weight: 600;
+  color: var(--accent);
+  font-family: 'JetBrains Mono', monospace;
+  margin-bottom: 0.2rem;
+}
+.article-title {
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: var(--text-primary);
+  text-decoration: none;
+  line-height: 1.4;
+  display: block;
+  margin-bottom: 0.25rem;
+}
+.article-title:hover { color: var(--accent); }
+.article-summary {
+  font-size: 0.85rem;
+  color: var(--text-secondary);
+  line-height: 1.5;
+}
+.article-meta {
+  font-size: 0.75rem;
+  color: var(--text-muted);
+  margin-top: 0.3rem;
+  font-family: 'JetBrains Mono', monospace;
+}
+.article-meta a { color: var(--text-muted); text-decoration: none; }
+.article-meta a:hover { color: var(--accent); }
+
+/* ── KOL / GitHub / Blog sections ── */
+.kol-item, .github-item, .blog-item {
+  padding: 0.75rem 0;
+  border-bottom: 1px solid #f3f4f6;
+}
+.kol-item:last-child, .github-item:last-child, .blog-item:last-child { border-bottom: none; }
+.kol-handle { font-weight: 600; font-size: 0.9rem; color: var(--text-primary); }
+.kol-metrics { font-size: 0.75rem; color: var(--text-muted); font-family: 'JetBrains Mono', monospace; margin-top: 0.2rem; }
+.kol-summary { font-size: 0.85rem; color: var(--text-secondary); margin-top: 0.3rem; }
+.github-item pre { font-size: 0.82rem; background: var(--bg); padding: 0.6rem 0.8rem; border-radius: 6px; overflow-x: auto; margin: 0.3rem 0; font-family: 'JetBrains Mono', monospace; }
+.blog-title { font-size: 0.95rem; font-weight: 500; }
+.blog-author { font-size: 0.78rem; color: var(--text-muted); margin: 0.15rem 0 0.3rem; }
+
+/* ── Footer ── */
+.footer {
+  text-align: center;
+  padding: 2rem 1.5rem;
+  color: var(--text-muted);
+  font-size: 0.8rem;
+  border-top: 1px solid var(--border);
+  margin-top: 3rem;
+}
+.footer a { color: var(--accent); text-decoration: none; }
+
+/* ── Empty / Loading states ── */
+.empty-state {
+  text-align: center;
+  padding: 4rem 1rem;
+  color: var(--text-secondary);
+}
+.empty-state .emoji { font-size: 3rem; margin-bottom: 1rem; }
+
+/* ── Stats bar ── */
+.stats-bar {
+  font-size: 0.78rem;
+  color: var(--text-muted);
+  font-family: 'JetBrains Mono', monospace;
+  padding: 0.6rem 1rem;
+  background: var(--bg);
+  border-radius: var(--radius);
+  margin-bottom: 1.5rem;
+  border: 1px solid var(--border);
+}
+
+/* ── Responsive ── */
+@media (max-width: 640px) {
+  .navbar-inner { height: auto; padding: 0.75rem 1rem; flex-wrap: wrap; }
+  .nav-topics { gap: 0.2rem; }
+  .nav-topic { font-size: 0.72rem; padding: 0.25rem 0.5rem; }
+  .container { padding: 1.25rem 1rem; }
+  .section-header h2 { font-size: 0.95rem; }
+}
