@@ -47,8 +47,17 @@ def extract_sections(markdown_content):
                 emoji, label = emoji_m.group(1), emoji_m.group(2).strip()
             else:
                 emoji, label = '📰', header
-            # Build a URL-safe id
-            topic_id = re.sub(r'[^a-z0-9]+', '-', label.lower()).strip('-')
+            # Build a URL-safe id, map to known topic classes
+            raw_id = re.sub(r'[^a-z0-9]+', '-', label.lower()).strip('-')
+            # Map to CSS-compatible short IDs
+            topic_id_map = {
+                'ai-llm': 'ai-llm', 'llm': 'ai-llm',
+                'crypto': 'crypto', 'bitcoin-crypto': 'crypto',
+                'oil': 'oil', 'oil-energy': 'oil', 'oil-gas-geopolitics': 'oil',
+                'finance': 'finance', 'us-markets': 'finance',
+                'philippines': 'philippines',
+            }
+            topic_id = topic_id_map.get(raw_id, raw_id)
             current = {'emoji': emoji, 'label': label, 'id': topic_id, 'articles': []}
             i += 1
             continue
