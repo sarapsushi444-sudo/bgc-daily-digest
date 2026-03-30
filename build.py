@@ -237,7 +237,7 @@ def build_manifest(archive_dir):
             'date': date_str,
             'date_display': date_display,
             'day': day,
-            'file': f'daily-{date_str}.html',
+            'file': f'archive/daily-{date_str}.html',
             'topics': [
                 {'label': 'AI/LLM', 'cls': 'ai'},
                 {'label': 'Crypto', 'cls': 'crypto'},
