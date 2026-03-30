@@ -47,17 +47,21 @@ def extract_sections(markdown_content):
                 emoji, label = emoji_m.group(1), emoji_m.group(2).strip()
             else:
                 emoji, label = '📰', header
-            # Build a URL-safe id, map to known topic classes
+            # Build a URL-safe id, map to CSS-compatible short IDs via keyword matching
             raw_id = re.sub(r'[^a-z0-9]+', '-', label.lower()).strip('-')
-            # Map to CSS-compatible short IDs
-            topic_id_map = {
-                'ai-llm': 'ai-llm', 'llm': 'ai-llm',
-                'crypto': 'crypto', 'bitcoin-crypto': 'crypto',
-                'oil': 'oil', 'oil-energy': 'oil', 'oil-gas-geopolitics': 'oil',
-                'finance': 'finance', 'us-markets': 'finance',
-                'philippines': 'philippines',
-            }
-            topic_id = topic_id_map.get(raw_id, raw_id)
+            label_lower = label.lower()
+            if 'ai' in label_lower or 'llm' in label_lower or 'language model' in label_lower:
+                topic_id = 'ai-llm'
+            elif 'bitcoin' in label_lower or 'crypto' in label_lower:
+                topic_id = 'crypto'
+            elif 'oil' in label_lower or 'gas' in label_lower or 'geopolitic' in label_lower or 'energy' in label_lower:
+                topic_id = 'oil'
+            elif 'market' in label_lower or 'finance' in label_lower or 'econom' in label_lower or 'stock' in label_lower:
+                topic_id = 'finance'
+            elif 'philippine' in label_lower or 'manila' in label_lower or 'bgc' in label_lower or 'makati' in label_lower:
+                topic_id = 'ph'
+            else:
+                topic_id = raw_id
             current = {'emoji': emoji, 'label': label, 'id': topic_id, 'articles': []}
             i += 1
             continue
