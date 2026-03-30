@@ -89,12 +89,12 @@
   async function loadDigestList() {
     const container = document.getElementById('digest-list');
     try {
-      const res = await fetch('archive/manifest.json');
+      const res = await fetch('manifest.json');
       if (!res.ok) throw new Error('No manifest');
       const digests = await res.json();
       if (!digests || digests.length === 0) throw new Error('Empty');
       container.innerHTML = digests.map(d => `
-        <a href="archive/${d.file}" class="digest-card">
+        <a href="${d.file}" class="digest-card">
           <div class="digest-card-header">
             <div>
               <span class="digest-date">${d.date_display}</span>
