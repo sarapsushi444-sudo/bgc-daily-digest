@@ -14,7 +14,6 @@ WORKSPACE = os.environ.get('WORKSPACE', '/home/ubuntu/.openclaw/workspace')
 SKILL_DIR = os.environ.get('SKILL_DIR', '/home/ubuntu/.openclaw/workspace/skills/tech-news-digest')
 ARCHIVE_DIR = os.path.join(WORKSPACE, 'archive/tech-news-digest')
 OUTPUT_DIR = os.path.join(WORKSPACE, 'digests')
-TEMPLATE_FILE = os.path.join(OUTPUT_DIR, 'template.html')
 
 TOPIC_CLASSES = {
     'ai-llm': 'ai', 'llm': 'ai',
@@ -25,47 +24,67 @@ TOPIC_CLASSES = {
 }
 
 def extract_sections(markdown_content):
-    """Split markdown into sections by emoji headers."""
+    """Split markdown into sections by emoji headers.
+    Article format (per line):
+      🔥 **11** • Title — Summary
+      → https://url.com
+    """
     sections = []
     current = {'emoji': '📰', 'label': 'Overview', 'id': 'overview', 'articles': []}
-    
-    # Pattern for section headers like ## 🧠 AI / LLM News & Trends
-    header_pattern = re.compile(r'^##\s+([^\s]+)\s+(.+)$', re.MULTILINE)
-    # Pattern for article lines: - 🔥 **78.5** • Title [link]
-    article_pattern = re.compile(r'^-\s+🔥\s+\*\*([\d.]+)\*\*.*?\[([^\]]+)\]\(([^\)]+)\).*$', re.MULTILINE)
-    
+
     lines = markdown_content.split('\n')
-    for line in lines:
-        # Section header
-        m = re.match(r'^##\s+(.+)$', line.strip())
-        if m:
+    i = 0
+    while i < len(lines):
+        line = lines[i].strip()
+
+        # Section header: ## emoji Label
+        if re.match(r'^##\s+', line):
             if current['articles'] or sections:
                 sections.append(current)
-            header = m.group(1).strip()
-            # Extract emoji
+            header = re.sub(r'^##\s+', '', line)
             emoji_m = re.match(r'^([^\w\s]\S*)\s*(.+)', header)
             if emoji_m:
                 emoji, label = emoji_m.group(1), emoji_m.group(2).strip()
             else:
                 emoji, label = '📰', header
-            topic_id = label.lower().replace(' ', '-').replace('/', '-')
+            # Build a URL-safe id
+            topic_id = re.sub(r'[^a-z0-9]+', '-', label.lower()).strip('-')
             current = {'emoji': emoji, 'label': label, 'id': topic_id, 'articles': []}
+            i += 1
             continue
-        
-        # Article line
-        am = re.search(r'🔥\s+\*\*([\d.]+)\*\*.*?\[([^\]]+)\]\(([^\)]+)\)', line)
-        if am:
-            score, title, url = am.group(1), am.group(2), am.group(3)
-            current['articles'].append({
-                'score': float(score),
-                'title': title,
-                'url': url,
-                'summary': '',
-            })
-    
+
+        # Article line: starts with 🔥 **score**
+        if '🔥' in line:
+            score_m = re.search(r'🔥\s+\*\*([\d.]+)\*\*', line)
+            if score_m:
+                score = float(score_m.group(1))
+                # Title is everything after the bullet (•) up to '—'
+                # Format: "🔥 **11** • Title — Summary"
+                bullet_idx = line.find('•')
+                title = line[bullet_idx+1:] if bullet_idx != -1 else line
+                title = title.split('—')[0].strip()
+                title = title.strip('• ').strip()
+
+                # Next line is URL (→ format)
+                url = ''
+                if i + 1 < len(lines):
+                    next_line = lines[i + 1].strip()
+                    if next_line.startswith('→ '):
+                        url = next_line[2:].strip()
+                        i += 1
+
+                if url:
+                    current['articles'].append({
+                        'score': score,
+                        'title': title,
+                        'url': url,
+                        'summary': '',
+                    })
+        i += 1
+
     if current['articles'] or sections:
         sections.append(current)
-    
+
     return sections
 
 def render_article(a):
@@ -73,10 +92,10 @@ def render_article(a):
     title = a.get('title', '')
     url = a.get('url', '#')
     summary = a.get('summary', '')
-    
+
     score_html = f'<div class="article-score">🔥 {score}</div>' if score else ''
     summary_html = f'<div class="article-summary">{summary}</div>' if summary else ''
-    
+
     return f"""
   <div class="article-item">
     {score_html}
@@ -85,7 +104,6 @@ def render_article(a):
   </div>"""
 
 def render_section(section):
-    topic_cls = TOPIC_CLASSES.get(section['id'], '')
     articles_html = ''.join(render_article(a) for a in section['articles'])
     return f"""
 <section class="section" id="{section['id']}">
@@ -99,15 +117,15 @@ def render_section(section):
 def build_digest_html(filename, date_display, day, markdown_content):
     """Build a full HTML page from a digest markdown file."""
     sections = extract_sections(markdown_content)
-    
+
     # Build section nav
     nav_items = ''.join(
         f'<a href="#{s["id"]}">{s["emoji"]} {s["label"].split(" ")[0]}</a>'
-        for s in sections
+        for s in sections if s.get('articles')
     )
-    
-    sections_html = ''.join(render_section(s) for s in sections)
-    
+
+    sections_html = ''.join(render_section(s) for s in sections if s.get('articles'))
+
     html = f'''<!DOCTYPE html>
 <html lang="en">
 <head>
@@ -164,7 +182,6 @@ def build_manifest(archive_dir):
     manifest = []
     for f in files:
         basename = os.path.basename(f)
-        # Extract date from filename: daily-YYYY-MM-DD.md
         date_str = basename.replace('daily-', '').replace('.md', '')
         try:
             dt = datetime.strptime(date_str, '%Y-%m-%d')
@@ -173,7 +190,7 @@ def build_manifest(archive_dir):
         except:
             date_display = date_str
             day = ''
-        
+
         manifest.append({
             'date': date_str,
             'date_display': date_display,
@@ -193,27 +210,23 @@ def build_manifest(archive_dir):
 def main():
     archive_dir = ARCHIVE_DIR
     output_dir = OUTPUT_DIR
-    
+
     os.makedirs(os.path.join(output_dir, 'archive'), exist_ok=True)
-    
-    # Build all digest HTML pages
+
     import glob
     md_files = sorted(glob.glob(os.path.join(archive_dir, 'daily-*.md')), reverse=True)
-    
+
     print(f'Found {len(md_files)} digest files')
-    
+
     for f in md_files:
         basename = os.path.basename(f)
         date_str = basename.replace('daily-', '').replace('.md', '')
         out_file = os.path.join(output_dir, 'archive', f'daily-{date_str}.html')
-        
-        if os.path.exists(out_file):
-            print(f'  [skip] {basename} → already built')
-            continue
-        
+
+        # Always rebuild to pick up changes
         with open(f, 'r') as fh:
             content = fh.read()
-        
+
         try:
             dt = datetime.strptime(date_str, '%Y-%m-%d')
             date_display = dt.strftime('%B %d, %Y')
@@ -221,21 +234,21 @@ def main():
         except:
             date_display = date_str
             day = ''
-        
+
         html = build_digest_html(basename, date_display, day, content)
-        
+
         with open(out_file, 'w') as fh:
             fh.write(html)
-        
-        print(f'  [built] {basename} → archive/daily-{date_str}.html')
-    
+
+        print(f'  [built] {basename} ({len(extract_sections(content))} sections)')
+
     # Build manifest
     manifest = build_manifest(archive_dir)
     manifest_file = os.path.join(output_dir, 'archive', 'manifest.json')
     with open(manifest_file, 'w') as f:
         json.dump(manifest, f, indent=2)
     print(f'Updated manifest with {len(manifest)} digests')
-    
+
     # Copy index + css to archive directory too (for GitHub Pages root)
     os.system(f'cp {OUTPUT_DIR}/index.html {OUTPUT_DIR}/archive/')
     os.system(f'cp {OUTPUT_DIR}/style.css {OUTPUT_DIR}/archive/')
