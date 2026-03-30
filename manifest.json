@@ -1,0 +1,31 @@
+[
+  {
+    "date": "2026-03-30",
+    "date_display": "March 30, 2026",
+    "day": "Monday",
+    "file": "daily-2026-03-30.html",
+    "topics": [
+      {
+        "label": "AI/LLM",
+        "cls": "ai"
+      },
+      {
+        "label": "Crypto",
+        "cls": "crypto"
+      },
+      {
+        "label": "Oil & Gas",
+        "cls": "oil"
+      },
+      {
+        "label": "US Markets",
+        "cls": "finance"
+      },
+      {
+        "label": "Philippines",
+        "cls": "ph"
+      }
+    ],
+    "topic_count": 5
+  }
+]
