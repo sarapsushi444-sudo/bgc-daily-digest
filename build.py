@@ -66,25 +66,43 @@ def extract_sections(markdown_content):
             i += 1
             continue
 
-        # Article line: starts with 🔥 **score**
+        # Article line: starts with 🔥 (with or without space before **score**)
         if '🔥' in line:
-            score_m = re.search(r'🔥\s+\*\*([\d.]+)\*\*', line)
+            # Match both "🔥 **12** |" and "🔥**12** |" formats
+            score_m = re.search(r'🔥\s*\*\*([\d.]+)\*\*', line)
             if score_m:
                 score = float(score_m.group(1))
-                # Title is everything after the bullet (•) up to '—'
-                # Format: "🔥 **11** • Title — Summary"
-                bullet_idx = line.find('•')
-                title = line[bullet_idx+1:] if bullet_idx != -1 else line
+                # Title is everything after the bullet (•) or pipe (|) up to '—'
+                # Format: "🔥 **11** • Title — Summary" OR "🔥**12** | Title — URL"
+                for sep in ['•', '|']:
+                    bullet_idx = line.find(sep)
+                    if bullet_idx != -1:
+                        title = line[bullet_idx+1:]
+                        break
+                else:
+                    title = line
                 title = title.split('—')[0].strip()
-                title = title.strip('• ').strip()
+                title = title.strip('• |').strip()
 
-                # Next line is URL (→ format)
+                # URL: on next line starting with "→ " OR "🔗 " OR inline after '—'
                 url = ''
                 if i + 1 < len(lines):
                     next_line = lines[i + 1].strip()
                     if next_line.startswith('→ '):
                         url = next_line[2:].strip()
                         i += 1
+                    elif next_line.startswith('🔗 '):
+                        url = next_line[2:].strip()
+                        i += 1
+                if not url:
+                    # Try inline URL after '—'
+                    dash_idx = line.find('—')
+                    if dash_idx != -1:
+                        url_part = line[dash_idx+1:].strip()
+                        # Extract URL if present
+                        url_m = re.search(r'https?://\S+', url_part)
+                        if url_m:
+                            url = url_m.group(0)
 
                 if url:
                     current['articles'].append({
